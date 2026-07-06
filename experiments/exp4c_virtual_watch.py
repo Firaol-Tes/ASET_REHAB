@@ -71,8 +71,11 @@ def synthesize(ex: str) -> SyntheticSession | None:
     R_tool = Rotation.from_matrix(np.stack([P[:3, :3] for P in poses]))
     p = np.stack([P[:3, 3] for P in poses])
     R_rel = R_tool * R0_tool.inv()
-    R0_watch = Rotation.from_rotvec(np.load(prim)["demo"][0])
-    R_watch = R0_watch * R_rel             # attitude of the virtual watch
+    pf = np.load(prim)
+    R0_watch = Rotation.from_rotvec(pf["demo"][0])
+    R_ref = Rotation.from_rotvec(pf["ref"])
+    # absolute watch attitude: session reference o rep-start o motion
+    R_watch = R_ref * R0_watch * R_rel
 
     # Device-Motion channels in the device frame
     Rm = R_watch.as_matrix()

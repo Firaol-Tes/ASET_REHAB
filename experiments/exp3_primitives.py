@@ -36,7 +36,7 @@ DT = 1.0 / FS
 
 
 def fit_session(session):
-    rotvec, theta = session_rotvec(session)
+    rotvec, theta, ref = session_rotvec(session)
     reps = segment_reps(theta)
     if not reps:
         return None
@@ -50,6 +50,7 @@ def fit_session(session):
     rmse = np.degrees(np.sqrt(np.mean((demo[:n] - recon[:n]) ** 2)))
     return {
         "session": session, "demo": demo, "dmp": dmp, "recon": recon,
+        "ref": ref,
         "n_reps": len(reps), "rep_dur_s": (e - s) / FS,
         "rmse_deg": float(rmse),
     }
@@ -90,7 +91,8 @@ def main():
     os.makedirs(prim_dir, exist_ok=True)
     for ex, r in fits.items():
         np.savez(os.path.join(prim_dir, f"{ex}.npz"),
-                 demo=r["demo"], weights=r["dmp"].w, y0=r["dmp"].y0,
+                 demo=r["demo"], ref=r["ref"],
+                 weights=r["dmp"].w, y0=r["dmp"].y0,
                  goal=r["dmp"].g, tau=r["dmp"].tau,
                  subject=r["session"].subject, wrist=r["session"].wrist)
     print(f"\nexported {len(fits)} primitives to results/primitives/")

@@ -36,6 +36,7 @@ JOINTS = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint",
 CTRL = "/joint_trajectory_controller/follow_joint_trajectory"
 DOWNSAMPLE = 5           # command waypoints at 20 Hz; controller interpolates
 LOOPS = 5                # repetitions per exercise set
+BLEND = 2.0              # s, slow return-to-start between repetitions
 
 
 def load_slowdowns():
@@ -64,9 +65,7 @@ class Executor(Node):
         """Move to configuration q smoothly (setup move)."""
         self._send(np.asarray([q]), np.asarray([duration]))
 
-    def play(self, qs, dt):
-        n = len(qs)
-        times = np.arange(1, n + 1) * dt * DOWNSAMPLE
+    def play(self, qs, times):
         self.samples = []
         self.recording = True
         self._send(qs, times)
@@ -117,13 +116,22 @@ def main():
         # therapy pace: at least half human speed, slower if UR5e
         # velocity limits demand it (Exp 4a feasibility)
         factor = max(2.0, slow.get(ex, 1.0))
-        # a therapy set: repeat the learned repetition, as the human did
-        cmd = np.tile(qs[::DOWNSAMPLE], (LOOPS, 1))
-        cmd_dt = dt * factor
+        # a therapy set: repeat the learned repetition, as the human did,
+        # with a slow return-to-start blend between repetitions
+        one = qs[::DOWNSAMPLE]
+        step = dt * factor * DOWNSAMPLE
+        cmd_list, t_list, t_now = [], [], 0.0
+        for loop in range(LOOPS):
+            if loop > 0:
+                t_now += BLEND
+            for k, wp in enumerate(one):
+                t_now += step
+                cmd_list.append(wp)
+                t_list.append(t_now)
+        cmd = np.asarray(cmd_list)
+        t_cmd = np.asarray(t_list)
         node.goto(qs[0], duration=8.0)
-        rec = node.play(cmd, cmd_dt)
-        # tracking error: interpolate achieved onto commanded timeline
-        t_cmd = np.arange(1, len(cmd) + 1) * cmd_dt * DOWNSAMPLE
+        rec = node.play(cmd, t_cmd)
         t_rec = rec[:, 0] - rec[0, 0]
         err = []
         for j in range(6):
@@ -140,7 +148,7 @@ def main():
         print(f"{ex:32s} x{factor:.2f}  {rows[-1]['duration_s']:5.1f}s  "
               f"mean {rows[-1]['mean_err_deg']:6.3f} deg  "
               f"max {rows[-1]['max_err_deg']:6.3f} deg")
-        np.savez(os.path.join(out_dir, fn), cmd=cmd, cmd_dt=cmd_dt,
+        np.savez(os.path.join(out_dir, fn), cmd=cmd, t_cmd=t_cmd,
                  recorded=rec)
 
     with open(os.path.join(RESULTS, "exp4b_tracking.csv"), "w",

@@ -9,13 +9,15 @@ from .motion import resample, theta_profile
 
 
 def session_rotvec(session, fs: float = 100.0):
-    """Heading-normalized rotation-vector trajectory (T, 3) + theta (T,)."""
+    """Heading-normalized rotation-vector trajectory (T, 3), theta (T,),
+    and the absolute reference attitude (rotation vector) at session
+    start — needed to reconstruct absolute watch attitude later."""
     t = session.t_ms
     grid = np.arange(t[0], t[-1], 1000.0 / fs)
     rot, _ = resample(t, session.quat_wxyz, session.gyro, grid)
     ref = rot[:50].mean()
     rel = ref.inv() * rot
-    return rel.as_rotvec(), rel.magnitude()
+    return rel.as_rotvec(), rel.magnitude(), ref.as_rotvec()
 
 
 def segment_reps(theta: np.ndarray, fs: float = 100.0):
