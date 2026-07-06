@@ -1,0 +1,6 @@
+# never commit raw data (contains participant names)
+data/
+*.csv.orig
+__pycache__/
+*.pyc
+.venv/

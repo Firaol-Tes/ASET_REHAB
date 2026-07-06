@@ -1,0 +1,11 @@
+exercise,n_pairs,r_theta_mean,r_theta_std,r_speed_mean,rmse_deg_mean
+Bicep-Curl,11,0.995,0.002,0.958,9.079
+External-Rotation,11,0.754,0.165,0.604,8.286
+Forearm-Pronation-Supination,10,0.990,0.005,0.898,16.210
+Front-Delt-Raise,11,0.988,0.005,0.893,7.180
+Lateral-Delt-Raise,11,0.975,0.041,0.902,9.090
+Scaption,11,0.996,0.003,0.968,6.343
+Scapular,11,0.986,0.012,0.905,7.474
+Ulnar-Nerve-Glide,10,0.995,0.003,0.961,6.977
+Wand-Extension,11,0.971,0.018,0.901,4.563
+Wand-Flexion,10,0.998,0.001,0.980,4.015
