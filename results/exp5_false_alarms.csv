@@ -1,0 +1,13 @@
+exercise,n_reps,false_alarm_rate
+Banded-Overhead-Reach,154,0.0519
+Bicep-Curl,180,0.0833
+External-Rotation,209,0.134
+Forearm-Pronation-Supination,197,0.1472
+Front-Delt-Raise,204,0.0196
+Lateral-Delt-Raise,200,0.075
+One-Arm-Tricep-Extension,79,0.2152
+Scaption,194,0.0206
+Scapular,230,0.0739
+Ulnar-Nerve-Glide,319,0.0596
+Wand-Extension,345,0.1217
+Wand-Flexion,141,0.0355
