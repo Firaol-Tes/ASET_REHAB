@@ -1,0 +1,13 @@
+executed,predicted,vote_frac,n_windows,correct
+Banded-Overhead-Reach,Front-Delt-Raise,1.0,1,False
+Bicep-Curl,Ulnar-Nerve-Glide,1.0,1,False
+External-Rotation,Ulnar-Nerve-Glide,1.0,1,False
+Forearm-Pronation-Supination,Forearm-Pronation-Supination,1.0,1,True
+Front-Delt-Raise,Banded-Overhead-Reach,0.5,2,False
+Lateral-Delt-Raise,Banded-Overhead-Reach,0.333,3,False
+One-Arm-Tricep-Extension,Ulnar-Nerve-Glide,1.0,2,False
+Scaption,Ulnar-Nerve-Glide,1.0,2,False
+Scapular,Ulnar-Nerve-Glide,0.5,2,False
+Ulnar-Nerve-Glide,Ulnar-Nerve-Glide,0.75,4,True
+Wand-Extension,Scapular,1.0,1,False
+Wand-Flexion,Front-Delt-Raise,0.333,3,False
