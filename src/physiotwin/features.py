@@ -48,9 +48,15 @@ def _channel_feats(x: np.ndarray, fs: float = 100.0) -> list[float]:
             domfreq, specent, float(tot / len(x))]
 
 
-def window_features(session: Session):
-    """Yield (feature_vector, subject, exercise, wrist) per window."""
+def window_features(session: Session, transform=None):
+    """Yield (feature_vector, subject, exercise, wrist) per window.
+
+    `transform`, if given, maps the raw (n, 19) record array to a
+    modified copy before feature extraction (e.g. wrist mirroring).
+    """
     a = session.load()
+    if transform is not None:
+        a = transform(a)
     chans = [a[:, COLS[c]] for c in _CHANNELS]
     chans.append(np.linalg.norm(a[:, [COLS["ax"], COLS["ay"], COLS["az"]]], axis=1))
     chans.append(np.linalg.norm(a[:, [COLS["wx"], COLS["wy"], COLS["wz"]]], axis=1))
@@ -62,10 +68,24 @@ def window_features(session: Session):
         yield np.asarray(vec), session.subject, session.exercise, session.wrist
 
 
-def build_matrix(sessions):
+def build_matrix(sessions, transform=None):
     """Feature matrix + label arrays for a list of sessions."""
     X, subj, ex, wrist = [], [], [], []
     for s in sessions:
-        for vec, sb, e, w in window_features(s):
+        for vec, sb, e, w in window_features(s, transform):
             X.append(vec); subj.append(sb); ex.append(e); wrist.append(w)
     return (np.vstack(X), np.asarray(subj), np.asarray(ex), np.asarray(wrist))
+
+
+def mirror_transform(signs: dict[str, float]):
+    """Build a record-array transform that flips channel signs.
+
+    `signs` maps channel names (keys of data.COLS) to +1/-1, as
+    estimated from synchronized dual-wrist recordings.
+    """
+    def apply(a: np.ndarray) -> np.ndarray:
+        out = a.copy()
+        for ch, s in signs.items():
+            out[:, COLS[ch]] *= s
+        return out
+    return apply

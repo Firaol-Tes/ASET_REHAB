@@ -1,0 +1,11 @@
+train,test,mode,acc
+RW,LW,raw,0.5945
+RW,LW,mirrored,0.9546
+RW,LW,augmented,0.9532
+LW,RW,raw,0.5286
+LW,RW,mirrored,0.9492
+LW,RW,augmented,0.9536
+RW-LOSO,LW,raw,0.5854
+RW-LOSO,LW,augmented,0.9249
+LW-LOSO,RW,raw,0.5282
+LW-LOSO,RW,augmented,0.9317
