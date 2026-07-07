@@ -12,9 +12,9 @@ Exercises with a Single Consumer Smartwatch}
 
 \author{
 \IEEEauthorblockN{Firaol Tesfaye}
-\IEEEauthorblockA{Department of Mechanical Engineering\\
-Higher Colleges of Technology, Dubai, UAE\\
-firaalx@gmail.com}
+\IEEEauthorblockA{Higher Colleges of Technology\\
+Dubai, UAE\\
+h00539876@hct.ac.ae}
 \and
 \IEEEauthorblockN{Yassine Benachour}
 \IEEEauthorblockA{Higher Colleges of Technology\\
@@ -390,14 +390,23 @@ lifts tempo detection to 66\% and half-range to 83\% at 7.7\% false
 alarms --- a short supervised calibration session buys personalized
 home grading (Fig.~\ref{fig:exp5}).
 
-Executed on the robot, the grader behaves consistently: reduced-range
-and tremor executions are flagged on essentially every repetition with
-the correct feature named, while clean executions pass. Truncated
-executions are \emph{not} flagged --- the guarded execution protocol's
-return-to-start blend completes every repetition by design, so
-truncation cannot physically occur in guided mode; it remains
-detectable (95\%) for free-moving patients.
-% TODO: update the robot-grading sentence with final exp5b v2 numbers
+Executed on the robot (three exercises, five variants each), the
+grader behaves consistently with the offline study. Tremor is flagged
+on 15 of 15 repetitions with the correct feature named
+(\texttt{hf\_ratio}); reduced range on 10 of 10 repetitions for the
+two exercises with narrow population ROM spread (\texttt{rom\_deg}),
+while wand extension's wide spread defeats the population bound ---
+matching its offline rate. Clean executions pass, apart from marginal
+duration flags on one exercise traced to the inter-repetition return
+blend merging into the repetition segment. Over-speed programs are
+caught \emph{before} grading: at full demonstration tempo the
+trajectory controller aborts on path tolerance --- an execution-layer
+safety net --- while over-speed inside tracking tolerance passes the
+population envelope, consistent with the offline finding that tempo
+faults require the personalized envelope. Truncated programs are not
+flagged because they cannot physically occur in guided mode: the
+protocol's return-to-start blend completes every repetition by design;
+truncation remains detectable (95\%) for free-moving patients.
 
 \begin{figure}[t]
 \centering
