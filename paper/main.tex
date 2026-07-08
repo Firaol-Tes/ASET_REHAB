@@ -298,7 +298,12 @@ repetitions --- 2$\times$ speed, half range, 4~Hz/3$^{\circ}$ tremor,
 truncation at 60\% --- and detection is evaluated LOSO. A
 \emph{personalized} envelope centers the intervals on a subject's own
 calibration repetitions (every second repetition) with the population
-width as a floor.
+width as a floor. Operationally this corresponds to a brief supervised
+calibration --- a handful of correctly performed repetitions recorded
+under clinician observation at the start of a treatment block --- after
+which unsupervised home sessions are graded against that patient's own
+baseline; the population floor guards against the small calibration set
+under-estimating natural variability.
 
 \section{Results}
 
@@ -436,9 +441,14 @@ fault positions of one repetition. Right: the injected fault types.}
 \section{Discussion and Limitations}
 \textbf{Scope.} All subjects are healthy adults and all executions are
 simulated; the paper claims a validated \emph{pipeline}, not a
-clinical outcome. Physical execution requires force-limited compliant
-control and, for any patient contact, ethics approval and a safety
-framework --- deliberate future work.
+clinical outcome. Physical execution is intended to layer
+admittance-controlled guidance over the collaborative arm's built-in
+safety envelope --- reduced-speed mode and a tool-center-point contact
+force limit (on the order of tens of newtons, well below injury
+thresholds) --- so that the software trajectory is bounded by
+hardware-enforced limits rather than trusted alone. Any patient
+contact additionally requires ethics approval and a formal risk
+assessment; both are deliberate future work.
 
 \textbf{The external-rotation thread.} The same exercise is the
 outlier in mirror symmetry, repetition-count agreement, and (in human
@@ -449,8 +459,13 @@ arm placement may be required for such exercises.
 \textbf{Retargeting fidelity.} The single-pivot forearm model
 reproduces hand orientation arcs faithfully but distorts
 translation-dominant movements, which is visible as the two
-verification failures. Richer arm models (two-segment, subject-scaled)
-are a natural extension.
+verification failures. A richer target would add an estimated shoulder
+joint center and a subject-scaled two-segment (upper-arm/forearm)
+chain, and could fuse the watch's linear user-acceleration channel ---
+unused here --- to constrain the hand's translational path rather than
+its orientation alone. This is a natural next step precisely because
+the failing exercises (deltoid raises) are the ones where hand
+translation, not wrist orientation, carries the movement.
 
 \textbf{Grading robot motion with human norms.} Idealized primitives
 are \emph{smoother than any human}; a naive envelope flags them for
