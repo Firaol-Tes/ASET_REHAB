@@ -5,6 +5,14 @@
 \usepackage{cite}
 \usepackage{url}
 
+% balanced multi-row author block (standard IEEE template helper)
+\makeatletter
+\newcommand{\linebreakand}{%
+  \end{@IEEEauthorhalign}\hfill\mbox{}\par
+  \mbox{}\hfill\begin{@IEEEauthorhalign}
+}
+\makeatother
+
 \begin{document}
 
 \title{PhysioTwin: Teaching, Verifying, and Grading Robotic Rehabilitation
@@ -20,7 +28,7 @@ h00539876@hct.ac.ae}
 \IEEEauthorblockA{Higher Colleges of Technology\\
 Dubai, UAE\\
 h00539899@hct.ac.ae}
-\and
+\linebreakand
 \IEEEauthorblockN{Moez Rehman}
 \IEEEauthorblockA{Higher Colleges of Technology\\
 Dubai, UAE\\
