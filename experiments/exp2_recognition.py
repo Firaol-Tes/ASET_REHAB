@@ -123,20 +123,20 @@ def main():
     ax.set_xticks(range(len(labels)))
     ax.set_yticks(range(len(labels)))
     short = [l.replace("-", " ") for l in labels]
-    ax.set_xticklabels(short, rotation=45, ha="right", fontsize=8)
-    ax.set_yticklabels(short, fontsize=8)
+    ax.set_xticklabels(short, rotation=45, ha="right", fontsize=10)
+    ax.set_yticklabels(short, fontsize=10)
     for i in range(len(labels)):
         for j in range(len(labels)):
             if cm[i, j] >= 0.01:
                 ax.text(j, i, f"{cm[i, j]:.2f}", ha="center", va="center",
-                        fontsize=6.5,
+                        fontsize=8,
                         color="white" if cm[i, j] > 0.6 else "black")
     ax.set_xlabel("predicted"); ax.set_ylabel("true")
     ax.set_title(f"12-class exercise recognition, LOSO "
                  f"(window acc {wacc:.1%}, session acc {sacc:.1%})")
     fig.colorbar(im, shrink=0.8)
     fig.tight_layout()
-    fig.savefig(os.path.join(RESULTS, "figures", "exp2_confusion.png"), dpi=160)
+    fig.savefig(os.path.join(RESULTS, "figures", "exp2_confusion.png"), dpi=500)
 
 
 if __name__ == "__main__":

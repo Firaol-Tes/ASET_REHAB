@@ -191,7 +191,9 @@ def make_figure(table, det, reps_by_cell):
     demo = max((th for (e, _s), ths in reps_by_cell.items() if e == ex
                 for th in ths), key=len)
 
-    fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.2))
+    plt.rcParams.update({"axes.labelsize": 13, "xtick.labelsize": 11,
+                     "ytick.labelsize": 11})
+    fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.8))
 
     ax = axes[0]
     rom = [f["rom_deg"] for f in train]
@@ -208,8 +210,8 @@ def make_figure(table, det, reps_by_cell):
     ax.set_xlabel("repetition duration (s)")
     ax.set_ylabel("range of motion (deg)")
     ax.set_title(f"{ex}: population envelope vs synthetic faults",
-                 fontsize=10)
-    ax.legend(fontsize=8, frameon=False)
+                 fontsize=13)
+    ax.legend(fontsize=11, frameon=False)
 
     ax = axes[1]
     ax.plot(np.arange(len(demo)) * DT, np.degrees(demo - demo[0]),
@@ -218,11 +220,11 @@ def make_figure(table, det, reps_by_cell):
         ax.plot(np.arange(len(bad)) * DT, np.degrees(bad - bad[0]),
                 lw=1.1, label=name)
     ax.set_xlabel("time (s)"); ax.set_ylabel("rotation angle (deg)")
-    ax.set_title("controlled faults injected into a genuine repetition", fontsize=10)
-    ax.legend(fontsize=8, frameon=False)
+    ax.set_title("controlled faults injected into a genuine repetition", fontsize=13)
+    ax.legend(fontsize=11, frameon=False)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(RESULTS, "figures", "exp5_quality.png"), dpi=160)
+    fig.savefig(os.path.join(RESULTS, "figures", "exp5_quality.png"), dpi=500)
 
 
 if __name__ == "__main__":

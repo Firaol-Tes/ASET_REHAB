@@ -79,7 +79,9 @@ def make_figures(rows, profiles, exercises):
 
     # Fig A: example theta profiles, best pair of four contrasting exercises
     show = ["Bicep-Curl", "Scaption", "Wand-Flexion", "External-Rotation"]
-    fig, axes = plt.subplots(2, 2, figsize=(11, 6), sharex=False)
+    plt.rcParams.update({"axes.labelsize": 13, "xtick.labelsize": 11,
+                     "ytick.labelsize": 11})
+    fig, axes = plt.subplots(2, 2, figsize=(12, 6.5), sharex=False)
     for ax, ex in zip(axes.flat, show):
         sel = [r for r in rows if r["exercise"] == ex]
         best = max(sel, key=lambda r: r["r_theta"])
@@ -87,17 +89,17 @@ def make_figures(rows, profiles, exercises):
         t = (grid - grid[0]) / 1000.0
         ax.plot(t, np.degrees(th_l), label="left wrist", lw=1.2)
         ax.plot(t, np.degrees(th_r), label="right wrist", lw=1.2, alpha=0.8)
-        ax.set_title(f"{ex}  (r = {best['r_theta']:.2f})", fontsize=10)
+        ax.set_title(f"{ex}  (r = {best['r_theta']:.2f})", fontsize=13)
         ax.set_xlabel("time (s)")
         ax.set_ylabel("rotation from start (deg)")
-    axes.flat[0].legend(frameon=False, fontsize=9)
+    axes.flat[0].legend(frameon=False, fontsize=12)
     fig.suptitle("Synchronized bilateral motion: rotation-angle profiles, "
-                 "left vs right wrist", fontsize=12)
+                 "left vs right wrist", fontsize=14)
     fig.tight_layout()
-    fig.savefig(os.path.join(figdir, "exp1_profiles.png"), dpi=160)
+    fig.savefig(os.path.join(figdir, "exp1_profiles.png"), dpi=500)
 
     # Fig B: r_theta distribution per exercise
-    fig, ax = plt.subplots(figsize=(10, 4.5))
+    fig, ax = plt.subplots(figsize=(11, 5))
     data = [[r["r_theta"] for r in rows if r["exercise"] == ex]
             for ex in exercises]
     ax.boxplot(data, labels=[e.replace("-", "\n") for e in exercises],
@@ -106,9 +108,9 @@ def make_figures(rows, profiles, exercises):
     ax.set_title("Bilateral mirror symmetry per exercise "
                  "(all subjects, synchronized dual-wrist pairs)")
     ax.axhline(0.9, color="gray", ls=":", lw=0.8)
-    ax.tick_params(axis="x", labelsize=7)
+    ax.tick_params(axis="x", labelsize=9.5)
     fig.tight_layout()
-    fig.savefig(os.path.join(figdir, "exp1_summary.png"), dpi=160)
+    fig.savefig(os.path.join(figdir, "exp1_summary.png"), dpi=500)
 
 
 if __name__ == "__main__":

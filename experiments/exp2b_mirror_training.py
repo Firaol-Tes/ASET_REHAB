@@ -40,10 +40,16 @@ MIRROR_CHANNELS = ["ax", "ay", "az", "wx", "wy", "wz",
                    "gx", "gy", "gz", "pitch", "roll"]
 
 
-def estimate_sign_map():
-    """Median LW/RW correlation per channel over synchronized pairs."""
+def estimate_sign_map(exclude_subject=None, verbose=True, save=True):
+    """Median LW/RW correlation per channel over synchronized pairs.
+
+    `exclude_subject` drops that subject's pairs, allowing the map to
+    be estimated strictly within a LOSO training fold (leakage check).
+    """
     per_channel = {ch: [] for ch in MIRROR_CHANNELS}
     for lw, rw, _ov in simultaneous_pairs():
+        if exclude_subject is not None and lw.subject == exclude_subject:
+            continue
         t0 = max(lw.t_ms[0], rw.t_ms[0])
         t1 = min(lw.t_ms[-1], rw.t_ms[-1])
         grid = np.arange(t0, t1, 10.0)
@@ -58,11 +64,33 @@ def estimate_sign_map():
         signs[ch] = 1.0 if med >= 0 else -1.0
         rows.append({"channel": ch, "median_corr": round(med, 3),
                      "sign": int(signs[ch]), "n_pairs": len(cs)})
-        print(f"{ch:6s} median corr {med:+.2f}  -> sign {int(signs[ch]):+d}")
-    with open(os.path.join(RESULTS, "exp2b_signmap.csv"), "w", newline="") as f:
-        w = csv.DictWriter(f, list(rows[0].keys()))
-        w.writeheader(); w.writerows(rows)
+        if verbose:
+            print(f"{ch:6s} median corr {med:+.2f}  -> sign {int(signs[ch]):+d}")
+    if save:
+        with open(os.path.join(RESULTS, "exp2b_signmap.csv"), "w",
+                  newline="") as f:
+            w = csv.DictWriter(f, list(rows[0].keys()))
+            w.writeheader(); w.writerows(rows)
     return signs
+
+
+def leakage_check(global_signs, subjects):
+    """Re-estimate the sign map excluding each subject in turn; verify
+    the per-fold maps equal the global one (no test-subject influence)."""
+    all_match = True
+    for held in subjects:
+        s = estimate_sign_map(exclude_subject=held, verbose=False,
+                              save=False)
+        diff = [ch for ch in MIRROR_CHANNELS
+                if s[ch] != global_signs[ch]]
+        status = "identical" if not diff else f"DIFFERS: {diff}"
+        if diff:
+            all_match = False
+        print(f"fold without {held}: {status}")
+    print("leakage check:",
+          "PASS - per-fold mirror maps identical to global map"
+          if all_match else "FAIL - fold-dependent signs found")
+    return all_match
 
 
 def rf():
@@ -74,6 +102,10 @@ def main():
     print("=== Step 1: mirror calibration from synchronized pairs ===")
     signs = estimate_sign_map()
     mirror = mirror_transform(signs)
+
+    print("\n=== Step 1b: leakage check (fold-wise sign maps) ===")
+    subjects_all = sorted({s.subject for s in index_sessions()})
+    leakage_check(signs, subjects_all)
 
     print("\n=== Step 2: cross-wrist training strategies ===")
     sessions = index_sessions()
@@ -128,7 +160,9 @@ def main():
         w.writeheader(); w.writerows(rows)
 
     # figure: grouped bars, within-wrist reference line at 0.93 (Exp 2)
-    fig, ax = plt.subplots(figsize=(7.5, 4.2))
+    plt.rcParams.update({"axes.labelsize": 13, "xtick.labelsize": 12,
+                     "ytick.labelsize": 11})
+    fig, ax = plt.subplots(figsize=(8.5, 4.8))
     modes = ["raw", "mirrored", "augmented"]
     width = 0.35
     for i, (tw, colr) in enumerate([("RW", "#3465a4"), ("LW", "#e69a2e")]):
@@ -139,7 +173,7 @@ def main():
                color=colr)
         for j, v in enumerate(vals):
             ax.text(j + (i - 0.5) * width, v + 0.012, f"{v:.2f}",
-                    ha="center", fontsize=9)
+                    ha="center", fontsize=11)
     ax.axhline(0.929, color="gray", ls="--", lw=1,
                label="within-wrist LOSO reference")
     ax.set_xticks(range(3))
@@ -147,10 +181,11 @@ def main():
                         "source + mirrored\n(augmented)"])
     ax.set_ylabel("window accuracy")
     ax.set_ylim(0, 1.05)
-    ax.set_title("Cross-wrist recognition: mirror-aware training closes the gap")
-    ax.legend(frameon=False, fontsize=9, loc="lower right")
+    ax.set_title("Cross-wrist recognition: mirror-aware training closes the gap",
+                 fontsize=13)
+    ax.legend(frameon=False, fontsize=11, loc="lower right")
     fig.tight_layout()
-    fig.savefig(os.path.join(RESULTS, "figures", "exp2b_gap.png"), dpi=160)
+    fig.savefig(os.path.join(RESULTS, "figures", "exp2b_gap.png"), dpi=500)
 
 
 if __name__ == "__main__":

@@ -106,7 +106,9 @@ def make_figure(fits):
     demo, dmp = r["demo"], r["dmp"]
     t = np.arange(len(demo)) * DT
 
-    fig, axes = plt.subplots(1, 3, figsize=(13, 3.8))
+    plt.rcParams.update({"axes.labelsize": 12, "xtick.labelsize": 10,
+                     "ytick.labelsize": 10})
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.2))
 
     ax = axes[0]
     for d, lab in enumerate(["x", "y", "z"]):
@@ -116,9 +118,9 @@ def make_figure(fits):
         ax.plot(np.arange(len(rec)) * DT, np.degrees(rec[:, d]),
                 lw=1.2, color=f"C{d}", label=f"rot-vec {lab}")
     ax.set_title(f"{ex}: demonstration (thick) vs DMP (thin)\n"
-                 f"RMSE {r['rmse_deg']:.1f} deg", fontsize=10)
+                 f"RMSE {r['rmse_deg']:.1f} deg", fontsize=12)
     ax.set_xlabel("time (s)"); ax.set_ylabel("rotation (deg)")
-    ax.legend(fontsize=8, frameon=False)
+    ax.legend(fontsize=10, frameon=False)
 
     ax = axes[1]
     base = dmp.rollout(DT)
@@ -129,9 +131,9 @@ def make_figure(fits):
         mag = np.degrees(np.linalg.norm(traj, axis=1))
         ax.plot(np.arange(len(traj)) * DT, mag, label=lab)
     ax.set_title("temporal scaling: same primitive,\npatient-adapted tempo",
-                 fontsize=10)
+                 fontsize=12)
     ax.set_xlabel("time (s)"); ax.set_ylabel("rotation angle (deg)")
-    ax.legend(fontsize=8, frameon=False)
+    ax.legend(fontsize=10, frameon=False)
 
     ax = axes[2]
     for k, lab in [(1.0, "full range"), (0.6, "60% range"),
@@ -141,12 +143,12 @@ def make_figure(fits):
         mag = np.degrees(np.linalg.norm(traj, axis=1))
         ax.plot(np.arange(len(traj)) * DT, mag, label=lab)
     ax.set_title("amplitude scaling: reduced range of\nmotion for early rehab",
-                 fontsize=10)
+                 fontsize=12)
     ax.set_xlabel("time (s)"); ax.set_ylabel("rotation angle (deg)")
-    ax.legend(fontsize=8, frameon=False)
+    ax.legend(fontsize=10, frameon=False)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(RESULTS, "figures", "exp3_dmp.png"), dpi=160)
+    fig.savefig(os.path.join(RESULTS, "figures", "exp3_dmp.png"), dpi=500)
 
 
 if __name__ == "__main__":
