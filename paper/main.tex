@@ -24,8 +24,7 @@ h00539899@hct.ac.ae}
 \IEEEauthorblockN{Moez Rehman}
 \IEEEauthorblockA{Higher Colleges of Technology\\
 Dubai, UAE\\
-% TODO: confirm Dr. Moez's email from the cc line of Dr. Yassine's message
-}
+mrehman1@hct.ac.ae}
 \and
 \IEEEauthorblockN{Yassine Benachour}
 \IEEEauthorblockA{Higher Colleges of Technology\\
@@ -148,7 +147,12 @@ proposed a hybrid CNN--LSTM that, notably, closed its
 subject-independent generalization gap by fine-tuning on roughly 60~s
 of user calibration data~\cite{eshetu2026} --- independently
 corroborating the value of short calibration sessions that our
-personalized quality envelope exploits (Section~V-F). We adopt this
+personalized quality envelope exploits (Section~V-F). Parallel work in
+the group explores dynamic-time-warping representations for upper-limb
+IMU classification --- combinatorial DTW medoid
+distances~\cite{kedir2026} and prototype-based DTW
+features~\cite{bona2026} --- an alternative movement-representation
+route to the windowed statistical features used here. We adopt this
 line's windowing/feature philosophy for our recognition baseline but
 address questions that require the new dataset's scale and dual-wrist
 design.
@@ -533,9 +537,8 @@ models for translation-dominant exercises.
 
 \section*{Data Availability}
 All analysis code, experiment scripts, anonymized per-session results,
-and the source of every figure and table in this paper are available
-at \url{https://github.com/Firaol-Tes/ASET_REHAB}.
-% TODO(Firaol): make the repository public before submission.
+and the source of every figure and table in this paper are publicly
+available at \url{https://github.com/Firaol-Tes/ASET_REHAB}.
 The raw sensor recordings contain participant identifiers and are
 available from the authors on reasonable request, subject to the
 consent terms of the collection.
@@ -594,7 +597,18 @@ pp.~99280--99307, 2026, doi: 10.1109/ACCESS.2026.3707566.
 A.~A. Damtie, S.~H. Eshetu, and S.~T. Araya, ``Hybrid multi-task LSTM
 autoencoder for semantic anomaly diagnosis in rehabilitation
 monitoring systems,'' in \emph{Proc. Int. Conf. on Communication,
-Computing, Networking, and Control in Cyber-Physical Systems}, 2026.
+Computing, Networking, and Control in Cyber-Physical Systems
+(CCNCPS)}, 2026.
+\bibitem{kedir2026} E.~M. Kedir, M.~A. Tilahun, G.~Bona, M.~Rehman,
+F.~Flitti, and Y.~Benachour, ``Interpretable joint movement
+classification via combinatorial DTW medoid distances and ensemble
+feature selection,'' in \emph{Proc. Intelligent Information Systems
+and Computing Conf. (IISCC)}, 2026.
+\bibitem{bona2026} G.~Bona, M.~A. Tilahun, E.~M. Kedir, M.~Rehman,
+F.~Flitti, and Y.~Benachour, ``Prototype-based DTW feature
+representation for upper limb movement classification from
+multichannel IMU signals,'' in \emph{Proc. Intelligent Information
+Systems and Computing Conf. (IISCC)}, 2026.
 \bibitem{krebs1998} H.~I. Krebs, N.~Hogan, M.~L. Aisen, and
 B.~T. Volpe, ``Robot-aided neurorehabilitation,'' \emph{IEEE
 Transactions on Rehabilitation Engineering}, vol.~6, no.~1,
