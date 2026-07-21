@@ -429,6 +429,17 @@ right: temporal and amplitude scaling of one learned primitive.}
 \label{fig:exp3}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/gazebo_exec.png}
+\caption{The UR5e executing a learned Bicep-Curl primitive in Gazebo
+(camera frames from the simulated therapy set). Under the single-pivot
+retargeting, the exercise is carried by the tool's orientation: the
+wrist sweeps the demonstrated hand arc from the hanging start pose (a)
+through mid-lift (b) to the curl peak (c).}
+\label{fig:gazebo}
+\end{figure}
+
 \subsection{Robot execution in simulation (Experiments 4a, 4b)}
 All 12 retargeted exercises track their pose references at
 sub-millimeter/sub-0.25$^{\circ}$ IK error within UR5e joint limits.
@@ -437,7 +448,8 @@ ulnar nerve glide, and wand flexion exceed wrist speed limits at human
 tempo and require DMP time scaling of 2.05--3.02$\times$ --- the
 primitive representation supplies exactly this knob. In Gazebo, all
 12 exercises execute as five-repetition therapy sets with
-0.07--0.63$^{\circ}$ mean joint tracking error.
+0.07--0.63$^{\circ}$ mean joint tracking error
+(Fig.~\ref{fig:gazebo}).
 
 \subsection{Closed-loop verification in simulation (Experiment 4c)}
 A random forest trained on all human windows classifies the

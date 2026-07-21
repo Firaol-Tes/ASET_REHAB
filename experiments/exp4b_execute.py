@@ -56,7 +56,7 @@ class Executor(Node):
         self.create_subscription(JointState, "/joint_states", self._cb, 50)
 
     def _cb(self, msg):
-        if self.recording:
+        if self.recording and all(j in msg.name for j in JOINTS):
             idx = [msg.name.index(j) for j in JOINTS]
             t = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
             self.samples.append([t] + [msg.position[i] for i in idx])
@@ -86,7 +86,7 @@ class Executor(Node):
         for j in JOINTS:
             tol = JointTolerance()
             tol.name = j
-            tol.position = 0.5          # rad; we measure error ourselves
+            tol.position = float(os.environ.get("PT_PATH_TOL", 0.5))
             goal.path_tolerance.append(tol)
         self.client.wait_for_server()
         fut = self.client.send_goal_async(goal)
