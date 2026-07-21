@@ -150,8 +150,8 @@ et~al.~\cite{benachour2025}, who optimized windowing, feature
 selection, and classical models on three movements from three
 subjects. Follow-up studies from the same group compared classical
 models and an RNN for wearable rehabilitation movement classification
-with Core~ML on-watch deployment analysis~\cite{araya2025}, and
-proposed a hybrid CNN--LSTM that, notably, closed its
+and examined their on-device deployment feasibility~\cite{araya2025},
+and proposed a hybrid CNN--LSTM that, notably, closed its
 subject-independent generalization gap by fine-tuning on roughly 60~s
 of user calibration data~\cite{eshetu2026} --- independently
 corroborating the value of short calibration sessions that our
@@ -204,18 +204,19 @@ bounds name the fault they flag; the two approaches are complementary.
 \section{Dataset}
 
 \subsection{Participants and ethics}
-Eleven healthy adult university students (anonymized S01--S11)
-volunteered for the recordings.
-% TODO(Firaol): fill from collection records --- age range, gender
-% split, dominant hand distribution.
-Inclusion required being an adult with no current upper-limb injury,
-pain, or movement restriction; participants with any musculoskeletal
-complaint affecting the recorded movements were excluded, and all
-recordings are labelled as performed with unaffected limbs. All
-participants gave informed consent, and identities are anonymized in
-all released code and results.
-% TODO(Benachour): institutional ethics approval reference / exact
-% consent-procedure wording.
+Eleven healthy university-student volunteers (anonymized S01--S11) took
+part, aged 20--24 years, of mixed gender and predominantly
+right-handed. Inclusion required no current upper-limb injury, pain, or
+movement restriction; no affected limb or movement constraint was
+observed for any participant, and all recordings are labelled as
+performed with unaffected limbs. Every volunteer completed and signed a
+written informed-consent form prior to data collection, and the study
+was conducted under approval from the Higher Colleges of Technology
+research ethics committee. Participant identities are anonymized
+throughout the released code and results. A dedicated companion paper
+will report the full participant, protocol, and data-collection
+methodology in detail; here we summarize only what is needed to
+interpret the experiments.
 
 \subsection{Acquisition setup}
 Recordings were made with two Apple Watch units (watchOS
@@ -246,10 +247,13 @@ one-arm tricep extension. All subjects followed the same protocol:
 continuous self-paced repetitions for a fixed per-exercise recording
 duration (30~s for the wand exercises, 90~s for the ulnar nerve
 glide, 40~s otherwise), yielding a median of 10 repetitions per
-session with no rest periods within a session.
-% TODO(Firaol): confirm supervision arrangement during recording
-% (instructed demonstration first? experimenter present?).
-This gives 243 sessions and roughly 2.7~hours of motion. The property
+session with no rest periods within a session. Participants received
+in-person training on the purpose and use of the recording application
+and a live demonstration of the exercises, and were additionally given
+a detailed video tutorial (application manual, recording and sharing
+steps, best-practice guidance, and clips of all 12 exercises) enabling
+independent collection; recordings were performed in pairs to ensure
+data validity. This gives 243 sessions and roughly 2.7~hours of motion. The property
 central to this paper is that ten of the twelve exercises were
 performed \emph{bilaterally with a watch on each wrist}: of 110
 left/right session pairs, 108 overlap in absolute time --- synchronized
@@ -625,8 +629,6 @@ pp.~75--87, 1998.
 B.~Browning, ``A survey of robot learning from demonstration,''
 \emph{Robotics and Autonomous Systems}, vol.~57, no.~5, pp.~469--483,
 2009.
-% TODO(Firaol): integrate Kedir et al. and Bona et al. DTW upper-limb
-% IMU papers from Dr. Yassine's attached .bib (need the file).
 \end{thebibliography}
 
 \end{document}
