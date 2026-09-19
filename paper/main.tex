@@ -121,7 +121,7 @@ The contributions are:
 from synchronized dual-wrist consumer smartwatches, quantified per
 exercise (Section~V-A);
 \item the first measurement of the cross-wrist deployment gap for
-clinical exercise recognition (a 35--40 percentage-point collapse) and
+clinical exercise recognition (a 33--40 percentage-point collapse) and
 its closure with a data-certified mirror transformation --- to
 statistical equivalence with within-wrist recognition, evaluated under
 the strictest unseen-subject-and-unseen-wrist protocol
@@ -258,14 +258,20 @@ in-person training on the purpose and use of the recording application
 and a live demonstration of the exercises, and were additionally given
 a detailed video tutorial (application manual, recording and sharing
 steps, best-practice guidance, and clips of all 12 exercises) enabling
-independent collection; recordings were performed in pairs to ensure
-data validity. This gives 240 analysed sessions and roughly 3.0~hours
+independent collection; participants recorded in pairs, each
+checking the other's setup and execution, to ensure data validity. This gives 240 analysed sessions and roughly 3.0~hours
 of motion. The property
 central to this paper is that ten of the twelve exercises were
-performed \emph{bilaterally with a watch on each wrist}: of 109
-left/right session pairs, 107 overlap in absolute time --- synchronized
-recordings of the same physical movement seen from both wrists (the
-remaining two exercises are single-arm by design).
+performed \emph{bilaterally with a watch on each wrist}. Ten
+bilateral exercises across 11 participants would give 110 left/right
+session pairs; one subject's wand-flexion left-wrist recording was
+lost at collection, leaving 109, of which 107 overlap in absolute
+time --- synchronized recordings of the same physical movement seen
+from both wrists (the remaining two exercises of the twelve are
+single-arm by design). The two non-overlapping pairs are left and
+right recordings of the same exercise made minutes apart rather than
+simultaneously, so they are excluded from every synchronized
+analysis.
 
 \section{Methods}
 
@@ -286,7 +292,15 @@ For each synchronized left/right pair we correlate the two wrists'
 $\theta(t)$ profiles (Pearson $r$, after lag alignment) and report the
 RMSE in degrees. Because $\theta(t)$ is frame-invariant, agreement
 directly measures bilateral \emph{motion} symmetry rather than sensor
-alignment.
+alignment. Note what this does and does not establish: $\theta(t)$ is
+a rotation \emph{magnitude}, so agreement between the two wrists
+validates that the arms traverse the same angular excursion with the
+same timing --- the amplitude and phase of the movement. It does not
+by itself establish the signed, axis-by-axis reflection relating the
+two sensor frames; that is the separate object estimated as the mirror
+map in Section~IV-C. The two are complementary: the magnitude result
+says the arms genuinely move alike, and the sign map says how their
+measurements relate.
 
 \subsection{Exercise recognition and the mirror map}
 Recognition follows the standard windowing pipeline: 2.56~s windows
@@ -395,7 +409,7 @@ exercises of one subject.}
 \label{fig:exp1}
 \end{figure}
 
-\subsection{Recognition and the cross-wrist gap (Experiments 2, 2b)}
+\subsection{Recognition and the cross-wrist gap (Experiments 2, 2b, 2c)}
 The LOSO baseline reaches 92.1\% window and 93.7\% session accuracy
 (macro-F1 0.916) over 12 classes and 8{,}187 windows
 (Fig.~\ref{fig:exp2}); residual confusion concentrates among the three
@@ -405,7 +419,16 @@ correction collapses accuracy to 59.5\% (train right, test left) and
 52.9\% (reverse). The estimated mirror map is physically coherent
 (gravity $x$/$z$, roll, and gyro $y$ transfer directly; pitch, gravity
 $y$, and gyro $x$/$z$ flip), and training on mirror-transformed data
-restores 94.9--95.5\%. Under the strictest protocol --- unseen subject
+restores 94.9--95.5\%. That this exceeds the within-wrist reference is
+a property of the protocol, not evidence of leakage through the
+transformation: at this stage the classifier trains on every subject's
+source-wrist recordings, including those of the subject it is tested
+on, whereas the within-wrist reference is leave-one-subject-out. The
+mirrored condition uses exactly as many training windows as the raw
+condition it is compared against --- only their signs differ --- so the
+gain is attributable to the transformation rather than to training-set
+size. Removing the subject overlap is precisely what the next protocol
+does. Under the strictest protocol --- unseen subject
 \emph{and} unseen wrist --- mirror-augmented training achieves
 92.5--93.2\%, against a within-wrist reference of 92.9\%. Because
 ``no worse than the reference'' is an equivalence claim rather than an
@@ -434,7 +457,10 @@ training. The dashed line is the within-wrist LOSO reference.}
 \end{figure}
 
 \subsection{Repetitions and motion primitives (Experiment 3)}
-Segmentation yields 2{,}452 repetitions across 239 of 240 sessions.
+Segmentation yields 2{,}452 repetitions across 239 of 240 sessions;
+in the remaining session no peak cleared the 40\%-prominence
+threshold, so no repetition boundaries were emitted and the session
+contributes no primitive.
 Because the dual-wrist recordings observe the same physical movement,
 per-wrist repetition counts validate each other: counts agree exactly
 in 86.9\% of pairs and within $\pm 1$ in 94.4\%, with five of the six
@@ -502,8 +528,9 @@ model, which most distorts translation-dominant raises. Two negative
 results proved diagnostic: single-repetition executions were almost
 universally misclassified (the features encode repetition rhythm),
 and omitting the session's absolute reference attitude from the
-virtual watch shifted all gravity-dependent features (2/12 until
-corrected).
+virtual watch shifted every gravity-dependent feature, leaving only
+2 of 12 exercises correctly recognized until the reference attitude
+was restored.
 
 \subsection{Movement-quality grading (Experiments 5, 5b)}
 On 2{,}452 genuine repetitions (LOSO), the population envelope flags
@@ -568,6 +595,24 @@ than trusted alone. Any human--robot therapy additionally requires
 ethics approval and a formal risk assessment; real human--robot
 therapy remains future work.
 
+\textbf{Wrist and device are confounded.} The protocol used the same
+two physical watches throughout, one always worn on the left wrist and
+the other always on the right (Section~III-B). Wrist side and device
+identity are therefore perfectly collinear, and the raw cross-wrist
+collapse we report may contain a device-specific component ---
+unit-to-unit inertial bias, or differences in fit and mounting ---
+alongside the anatomical mirroring the transformation is designed to
+undo. The sign map is estimated from paired recordings and cannot
+distinguish the two. Handedness is a second, weaker confound, as the
+cohort is predominantly right-handed and the dominant arm may be
+performed differently. Neither affects the deployment claim, which is
+that a model trained on one wrist can be made to work on the other
+under the conditions tested; both limit the anatomical interpretation.
+Isolating them requires a device-swap subset --- the same subject
+repeating an exercise with the two watches exchanged between wrists
+--- which the present dataset does not contain and which we intend to
+collect.
+
 \textbf{The external-rotation thread.} The same exercise is the
 outlier in mirror symmetry, repetition-count agreement, and (in human
 data) recognition confusions: small-amplitude movements stress every
@@ -627,6 +672,23 @@ protocol.
 physiotherapy exercise recognition: machine learning the inertial
 signals from a smartwatch,'' \emph{Physiological Measurement},
 vol.~39, no.~7, 2018.
+\bibitem{benachour2026review} Y.~Benachour \emph{et al.}, ``Machine
+learning for wearable sensor-based human movement rehabilitation: A
+five-year systematic review,'' \emph{IEEE Access}, vol.~14,
+pp.~99280--99307, 2026, doi: 10.1109/ACCESS.2026.3707566.
+\bibitem{krebs1998} H.~I. Krebs, N.~Hogan, M.~L. Aisen, and
+B.~T. Volpe, ``Robot-aided neurorehabilitation,'' \emph{IEEE
+Transactions on Rehabilitation Engineering}, vol.~6, no.~1,
+pp.~75--87, 1998.
+\bibitem{maciejasz2014} P.~Maciejasz \emph{et al.}, ``A survey on
+robotic devices for upper limb rehabilitation,'' \emph{Journal of
+NeuroEngineering and Rehabilitation}, vol.~11, no.~3, 2014.
+\bibitem{ramachandran1996} V.~S. Ramachandran and D.~Rogers-Ramachandran,
+``Synaesthesia in phantom limbs induced with mirrors,''
+\emph{Proceedings of the Royal Society B}, vol.~263, pp.~377--386, 1996.
+\bibitem{thieme2018} H.~Thieme \emph{et al.}, ``Mirror therapy for
+improving motor function after stroke,'' \emph{Cochrane Database of
+Systematic Reviews}, no.~7, 2018.
 \bibitem{benachour2025} Y.~Benachour, M.~Rehman, and F.~Flitti,
 ``Towards improved human arm movement analysis: Advanced feature
 engineering and model optimization,'' \emph{Engineering Applications
@@ -643,34 +705,6 @@ framework for upper-limb motion recognition using wearable IMU
 sensors,'' in \emph{Proc. Int. Conf. on Interactive Systems \&
 Information Society Technologies (InterSys)}, Dubai, UAE, 2026,
 doi: 10.1109/InterSys69825.2026.11565250.
-\bibitem{maciejasz2014} P.~Maciejasz \emph{et al.}, ``A survey on
-robotic devices for upper limb rehabilitation,'' \emph{Journal of
-NeuroEngineering and Rehabilitation}, vol.~11, no.~3, 2014.
-\bibitem{ijspeert2013} A.~J. Ijspeert \emph{et al.}, ``Dynamical
-movement primitives: Learning attractor models for motor behaviors,''
-\emph{Neural Computation}, vol.~25, no.~2, pp.~328--373, 2013.
-\bibitem{ramachandran1996} V.~S. Ramachandran and D.~Rogers-Ramachandran,
-``Synaesthesia in phantom limbs induced with mirrors,''
-\emph{Proceedings of the Royal Society B}, vol.~263, pp.~377--386, 1996.
-\bibitem{thieme2018} H.~Thieme \emph{et al.}, ``Mirror therapy for
-improving motor function after stroke,'' \emph{Cochrane Database of
-Systematic Reviews}, no.~7, 2018.
-\bibitem{bulling2014} A.~Bulling, U.~Blanke, and B.~Schiele, ``A
-tutorial on human activity recognition using body-worn inertial
-sensors,'' \emph{ACM Computing Surveys}, vol.~46, no.~3, 2014.
-\bibitem{balasubramanian2015} S.~Balasubramanian \emph{et al.}, ``On
-the analysis of movement smoothness,'' \emph{Journal of
-NeuroEngineering and Rehabilitation}, vol.~12, no.~112, 2015.
-\bibitem{benachour2026review} Y.~Benachour \emph{et al.}, ``Machine
-learning for wearable sensor-based human movement rehabilitation: A
-five-year systematic review,'' \emph{IEEE Access}, vol.~14,
-pp.~99280--99307, 2026, doi: 10.1109/ACCESS.2026.3707566.
-\bibitem{benachour2026ae} Y.~Benachour, A.~M. Endale, A.~B. Balcha,
-A.~A. Damtie, S.~H. Eshetu, and S.~T. Araya, ``Hybrid multi-task LSTM
-autoencoder for semantic anomaly diagnosis in rehabilitation
-monitoring systems,'' in \emph{Proc. Int. Conf. on Communication,
-Computing, Networking, and Control in Cyber-Physical Systems
-(CCNCPS)}, 2026.
 \bibitem{kedir2026} E.~M. Kedir, M.~A. Tilahun, G.~Bona, M.~Rehman,
 F.~Flitti, and Y.~Benachour, ``Interpretable joint movement
 classification via combinatorial DTW medoid distances and ensemble
@@ -681,14 +715,25 @@ F.~Flitti, and Y.~Benachour, ``Prototype-based DTW feature
 representation for upper limb movement classification from
 multichannel IMU signals,'' in \emph{Proc. Intelligent Information
 Systems and Computing Conf. (IISCC)}, 2026.
-\bibitem{krebs1998} H.~I. Krebs, N.~Hogan, M.~L. Aisen, and
-B.~T. Volpe, ``Robot-aided neurorehabilitation,'' \emph{IEEE
-Transactions on Rehabilitation Engineering}, vol.~6, no.~1,
-pp.~75--87, 1998.
+\bibitem{bulling2014} A.~Bulling, U.~Blanke, and B.~Schiele, ``A
+tutorial on human activity recognition using body-worn inertial
+sensors,'' \emph{ACM Computing Surveys}, vol.~46, no.~3, 2014.
 \bibitem{argall2009} B.~D. Argall, S.~Chernova, M.~Veloso, and
 B.~Browning, ``A survey of robot learning from demonstration,''
 \emph{Robotics and Autonomous Systems}, vol.~57, no.~5, pp.~469--483,
 2009.
+\bibitem{ijspeert2013} A.~J. Ijspeert \emph{et al.}, ``Dynamical
+movement primitives: Learning attractor models for motor behaviors,''
+\emph{Neural Computation}, vol.~25, no.~2, pp.~328--373, 2013.
+\bibitem{balasubramanian2015} S.~Balasubramanian \emph{et al.}, ``On
+the analysis of movement smoothness,'' \emph{Journal of
+NeuroEngineering and Rehabilitation}, vol.~12, no.~112, 2015.
+\bibitem{benachour2026ae} Y.~Benachour, A.~M. Endale, A.~B. Balcha,
+A.~A. Damtie, S.~H. Eshetu, and S.~T. Araya, ``Hybrid multi-task LSTM
+autoencoder for semantic anomaly diagnosis in rehabilitation
+monitoring systems,'' in \emph{Proc. Int. Conf. on Communication,
+Computing, Networking, and Control in Cyber-Physical Systems
+(CCNCPS)}, 2026.
 \end{thebibliography}
 
 \end{document}
