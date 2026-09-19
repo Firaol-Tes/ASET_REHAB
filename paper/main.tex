@@ -121,7 +121,8 @@ The contributions are:
 from synchronized dual-wrist consumer smartwatches, quantified per
 exercise (Section~V-A);
 \item the first measurement of the cross-wrist deployment gap for
-clinical exercise recognition (a 33--40 percentage-point collapse) and
+clinical exercise recognition (a 33--40 percentage-point collapse
+against the within-wrist reference) and
 its closure with a data-certified mirror transformation --- to
 statistical equivalence with within-wrist recognition, evaluated under
 the strictest unseen-subject-and-unseen-wrist protocol
@@ -266,7 +267,11 @@ performed \emph{bilaterally with a watch on each wrist}: of 109
 left/right session pairs, 107 overlap in absolute time --- synchronized
 recordings of the same physical movement seen from both wrists (the
 remaining two --- banded overhead reach and one-arm tricep extension
---- are single-arm by design).
+--- are single-arm by design). A complete protocol would give 242
+sessions and 110 pairs: three recordings are absent and one exercise
+was recorded twice, giving 240 sessions, and because one of the absent
+recordings is the left-wrist half of a bilateral session there are 109
+pairs rather than 110. Nothing was excluded from analysis.
 
 \section{Methods}
 
@@ -303,7 +308,7 @@ with 50\% overlap; per window, 12 time- and frequency-domain
 statistics for each of 13 channels (user acceleration, rotation rate,
 gravity, pitch, roll, and the two frame-invariant magnitudes), for 156
 features; a 300-tree random forest; and strict leave-one-subject-out
-(LOSO) evaluation. Absolute yaw is excluded because its arbitrary
+(LOSO) evaluation for the within-wrist baseline. Absolute yaw is excluded because its arbitrary
 per-session reference would leak session identity. Session-level
 decisions use majority voting. Two evaluation protocols are used for
 cross-wrist transfer and should not be confused. The first holds out
