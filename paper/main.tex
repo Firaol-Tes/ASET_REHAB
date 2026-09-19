@@ -265,7 +265,8 @@ central to this paper is that ten of the twelve exercises were
 performed \emph{bilaterally with a watch on each wrist}: of 109
 left/right session pairs, 107 overlap in absolute time --- synchronized
 recordings of the same physical movement seen from both wrists (the
-remaining two exercises are single-arm by design).
+remaining two --- banded overhead reach and one-arm tricep extension
+--- are single-arm by design).
 
 \section{Methods}
 
@@ -304,7 +305,13 @@ gravity, pitch, roll, and the two frame-invariant magnitudes), for 156
 features; a 300-tree random forest; and strict leave-one-subject-out
 (LOSO) evaluation. Absolute yaw is excluded because its arbitrary
 per-session reference would leak session identity. Session-level
-decisions use majority voting.
+decisions use majority voting. Two evaluation protocols are used for
+cross-wrist transfer and should not be confused. The first holds out
+the \emph{wrist} but not the subject: it trains on one wrist's
+recordings from all subjects and tests on the other wrist. The second,
+used for every
+deployment-relevant claim, holds out \emph{both} --- the test subject
+and the test wrist are unseen.
 
 For cross-wrist transfer we estimate a \emph{data-certified mirror
 map}: for every channel, the sign relating left- and right-wrist
@@ -421,10 +428,17 @@ on, whereas the within-wrist reference is leave-one-subject-out. The
 mirrored condition uses exactly as many training windows as the raw
 condition it is compared against --- only their signs differ --- so the
 gain is attributable to the transformation rather than to training-set
-size. Removing the subject overlap is precisely what the next protocol
-does. Under the strictest protocol --- unseen subject
+size. The augmented condition does double the training set, and that
+it matches the mirrored condition rather than exceeding it is further
+evidence that the sign correction, not the added volume, is what
+recovers the accuracy. Removing the subject overlap is precisely what
+the next protocol does. Under the strictest protocol --- unseen subject
 \emph{and} unseen wrist --- mirror-augmented training achieves
-92.5--93.2\%, against a within-wrist reference of 92.9\%. Because
+92.5--93.2\%, against a within-wrist reference of 92.9\%. That
+reference is not the 92.1\% baseline above: it is computed on the
+ten exercises recorded on both wrists and on the test wrist alone, so
+it scores a slightly easier ten-class problem on matched test windows.
+Because
 ``no worse than the reference'' is an equivalence claim rather than an
 absence of difference, we test it as one (Experiment 2c): over the 22
 paired subject folds the mean accuracy difference is $-0.02$ points
@@ -446,7 +460,9 @@ deployment gap is closed
 \centering
 \includegraphics[width=\columnwidth]{figures/exp2b_gap.png}
 \caption{Cross-wrist recognition with raw, mirrored, and augmented
-training. The dashed line is the within-wrist LOSO reference.}
+training (wrist held out, subject not). The dashed line is the
+within-wrist LOSO reference; the unseen-subject-and-unseen-wrist
+results are reported in the text.}
 \label{fig:exp2b}
 \end{figure}
 
@@ -470,6 +486,17 @@ ladder.
 \caption{Left: DMP reconstruction over the demonstration. Middle,
 right: temporal and amplitude scaling of one learned primitive.}
 \label{fig:exp3}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/exp4a_retarget.png}
+\caption{Retargeting one learned bicep-curl repetition to the UR5e.
+Left: the commanded tool path traced about the virtual elbow anchor.
+Middle: the six resulting joint trajectories. Right: inverse-kinematic
+tracking error, which stays below 0.005~mm and 0.0006$^{\circ}$ for
+this exercise.}
+\label{fig:exp4a}
 \end{figure}
 
 \begin{figure}[t]
@@ -500,16 +527,6 @@ primitive representation supplies exactly this knob. In Gazebo, all
 0.07--0.56$^{\circ}$ mean joint tracking error
 (Fig.~\ref{fig:gazebo}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/exp4a_retarget.png}
-\caption{Retargeting one learned bicep-curl repetition to the UR5e.
-Left: the commanded tool path traced about the virtual elbow anchor.
-Middle: the six resulting joint trajectories. Right: inverse-kinematic
-tracking error, which stays below 0.005~mm and 0.0006$^{\circ}$ for
-this exercise.}
-\label{fig:exp4a}
-\end{figure}
 
 \subsection{Closed-loop verification in simulation (Experiment 4c)}
 A random forest trained on all human windows classifies the
@@ -598,8 +615,8 @@ unit-to-unit inertial bias, or differences in fit and mounting ---
 alongside the anatomical mirroring the transformation is designed to
 undo. The sign map is estimated from paired recordings and cannot
 distinguish the two. Handedness is a second, weaker confound, as the
-cohort is predominantly right-handed and the dominant arm may be
-performed differently. Neither affects the deployment claim, which is
+cohort is predominantly right-handed and exercises may be performed
+differently with the dominant arm. Neither affects the deployment claim, which is
 that a model trained on one wrist can be made to work on the other
 under the conditions tested; both limit the anatomical interpretation.
 Isolating them requires a device-swap subset --- the same subject
