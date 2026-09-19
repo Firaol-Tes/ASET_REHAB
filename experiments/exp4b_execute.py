@@ -151,10 +151,21 @@ def main():
         np.savez(os.path.join(out_dir, fn), cmd=cmd, t_cmd=t_cmd,
                  recorded=rec)
 
-    with open(os.path.join(RESULTS, "exp4b_tracking.csv"), "w",
-              newline="") as f:
+    # Merge into the existing table rather than truncating it: a filtered
+    # re-run (e.g. one exercise, to recapture figure frames) must not drop
+    # the other exercises' rows from the published results table.
+    out_csv = os.path.join(RESULTS, "exp4b_tracking.csv")
+    merged = {}
+    if os.path.exists(out_csv):
+        with open(out_csv) as f:
+            for row in csv.DictReader(f):
+                merged[row["exercise"]] = row
+    for row in rows:
+        merged[row["exercise"]] = {k: str(v) for k, v in row.items()}
+    with open(out_csv, "w", newline="") as f:
         w = csv.DictWriter(f, list(rows[0].keys()))
-        w.writeheader(); w.writerows(rows)
+        w.writeheader()
+        w.writerows(merged[k] for k in sorted(merged))
     node.destroy_node()
     rclpy.shutdown()
 

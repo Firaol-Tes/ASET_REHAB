@@ -50,7 +50,7 @@ teaching. We present PhysioTwin, a pipeline in which a single consumer
 smartwatch is the entire interface to a rehabilitation robot: a
 demonstration recorded on the wrist teaches the robot an exercise, and
 the same sensing pipeline later verifies and grades performance. The
-system builds on a new dataset of 243 sessions from 11 healthy
+system builds on a new dataset of 240 sessions from 11 healthy
 subjects performing 12 prescribed upper-limb exercises, most recorded
 simultaneously on both wrists. With it we provide the first
 ground-truth validation of the bilateral mirror-symmetry assumption;
@@ -61,7 +61,8 @@ as dynamic movement primitives and execute them on a
 simulated robot's executions through a virtual watch; and grade
 movement quality against population and personalized motion envelopes.
 Subject-independent recognition exceeds 92\%, and mirror-aware
-training restores cross-wrist accuracy to the within-wrist level. All
+training restores cross-wrist accuracy to statistical equivalence with
+the within-wrist level. All
 experiments are reproducible from the accompanying repository.
 \end{abstract}
 
@@ -106,8 +107,9 @@ monitor.
 
 The work is grounded in a new dual-wrist dataset (Section~III) whose
 distinguishing property is simultaneity: subjects performed bilateral
-exercises wearing a watch on each wrist, so every left-wrist recording
-has a synchronized right-wrist counterpart. This enables experiments
+exercises wearing a watch on each wrist, so almost every left-wrist
+recording has a synchronized right-wrist counterpart (107 of 109
+pairs). This enables experiments
 that were previously impossible, most importantly a ground-truth test
 of the mirror-symmetry assumption that underlies both mirror therapy
 instrumentation and left/right data augmentation in wearable machine
@@ -120,8 +122,9 @@ from synchronized dual-wrist consumer smartwatches, quantified per
 exercise (Section~V-A);
 \item the first measurement of the cross-wrist deployment gap for
 clinical exercise recognition (a 35--40 percentage-point collapse) and
-its complete closure with a data-certified mirror transformation,
-evaluated under the strictest unseen-subject-and-unseen-wrist protocol
+its closure with a data-certified mirror transformation --- to
+statistical equivalence with within-wrist recognition, evaluated under
+the strictest unseen-subject-and-unseen-wrist protocol
 (Section~V-B);
 \item an end-to-end, reproducible pipeline from smartwatch
 demonstration to robot execution --- repetition segmentation, dynamic
@@ -234,7 +237,10 @@ beyond CoreMotion's internal sensor fusion. Every sample carries a
 Unix-epoch millisecond timestamp from the watch's NTP-disciplined
 clock, which synchronizes the two devices; residual offset is absorbed
 in analysis by a $\pm1$~s cross-correlation lag search. Effective
-sampling rates span 99.5--100.2~Hz with no missing samples.
+sampling rates span 99.5--100.2~Hz, and sample delivery is 99.86\%
+complete: 1{,}497 of 1.09~million expected samples are absent as brief
+dropouts (largest single gap 163~ms), which the common-grid resampling
+of Section~IV-A absorbs.
 
 \subsection{Exercise protocol}
 Each subject performed 12 prescribed upper-limb rehabilitation
@@ -253,10 +259,11 @@ and a live demonstration of the exercises, and were additionally given
 a detailed video tutorial (application manual, recording and sharing
 steps, best-practice guidance, and clips of all 12 exercises) enabling
 independent collection; recordings were performed in pairs to ensure
-data validity. This gives 243 sessions and roughly 2.7~hours of motion. The property
+data validity. This gives 240 analysed sessions and roughly 3.0~hours
+of motion. The property
 central to this paper is that ten of the twelve exercises were
-performed \emph{bilaterally with a watch on each wrist}: of 110
-left/right session pairs, 108 overlap in absolute time --- synchronized
+performed \emph{bilaterally with a watch on each wrist}: of 109
+left/right session pairs, 107 overlap in absolute time --- synchronized
 recordings of the same physical movement seen from both wrists (the
 remaining two exercises are single-arm by design).
 
@@ -305,6 +312,15 @@ the test subject enters the mirror transformation. No other
 preprocessing uses dataset-level statistics --- features are computed
 per window, and random-forest training requires no global
 normalization.
+
+To ask whether mirror-augmented cross-wrist recognition is
+\emph{equivalent} to within-wrist recognition rather than merely not
+significantly different from it, both arms are evaluated on the same
+held-out subject and the same test-wrist windows, giving 22 paired
+folds (11 subjects $\times$ 2 transfer directions). We report a paired
+Wilcoxon signed-rank test of difference and, because equivalence is
+the claim of interest, two one-sided tests (TOST) against a
+pre-specified margin of 2 accuracy points.
 
 \subsection{Repetition segmentation and primitive learning}
 Repetitions are segmented from the smoothed $\theta(t)$ profile by
@@ -391,8 +407,15 @@ correction collapses accuracy to 59.5\% (train right, test left) and
 $y$, and gyro $x$/$z$ flip), and training on mirror-transformed data
 restores 94.9--95.5\%. Under the strictest protocol --- unseen subject
 \emph{and} unseen wrist --- mirror-augmented training achieves
-92.5--93.2\%, statistically indistinguishable from the within-wrist
-reference (92.9\%): the deployment gap is closed
+92.5--93.2\%, against a within-wrist reference of 92.9\%. Because
+``no worse than the reference'' is an equivalence claim rather than an
+absence of difference, we test it as one (Experiment 2c): over the 22
+paired subject folds the mean accuracy difference is $-0.02$ points
+(90\% CI $[-1.0, +0.9]$), a paired Wilcoxon test finds no difference
+($p = 0.99$), and two one-sided tests establish equivalence within a
+pre-specified $\pm 2$-point margin ($p = 0.001$; $p = 0.033$ and
+$p = 0.045$ for the two transfer directions separately). The
+deployment gap is closed
 (Fig.~\ref{fig:exp2b}).
 
 \begin{figure}[t]
@@ -441,15 +464,32 @@ through mid-lift (b) to the curl peak (c).}
 \end{figure}
 
 \subsection{Robot execution in simulation (Experiments 4a, 4b)}
-All 12 retargeted exercises track their pose references at
-sub-millimeter/sub-0.25$^{\circ}$ IK error within UR5e joint limits.
-Nine execute at demonstration speed; forearm pronation--supination,
+All 12 retargeted exercises stay within UR5e joint limits and track
+their pose references to better than 0.25$^{\circ}$ in orientation
+(Fig.~\ref{fig:exp4a}).
+Ten track to sub-millimeter position error; the exceptions are ulnar
+nerve glide and wand flexion (18.6 and 19.8~mm peak), the same two
+trajectories whose commanded joint velocities most exceed the arm's
+limits at human tempo, where the step-capped IK solver lags the
+reference at its fastest waypoints. Nine execute at demonstration
+speed; forearm pronation--supination,
 ulnar nerve glide, and wand flexion exceed wrist speed limits at human
 tempo and require DMP time scaling of 2.05--3.02$\times$ --- the
 primitive representation supplies exactly this knob. In Gazebo, all
 12 exercises execute as five-repetition therapy sets with
-0.07--0.63$^{\circ}$ mean joint tracking error
+0.07--0.56$^{\circ}$ mean joint tracking error
 (Fig.~\ref{fig:gazebo}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/exp4a_retarget.png}
+\caption{Retargeting one learned bicep-curl repetition to the UR5e.
+Left: the commanded tool path traced about the virtual elbow anchor.
+Middle: the six resulting joint trajectories. Right: inverse-kinematic
+tracking error, which stays below 0.005~mm and 0.0006$^{\circ}$ for
+this exercise.}
+\label{fig:exp4a}
+\end{figure}
 
 \subsection{Closed-loop verification in simulation (Experiment 4c)}
 A random forest trained on all human windows classifies the
@@ -478,14 +518,19 @@ alarms --- a short supervised calibration session buys personalized
 home grading (Fig.~\ref{fig:exp5}).
 
 Executed on the robot (three exercises, five variants each), the
-grader behaves consistently with the offline study. Tremor is flagged
-on 15 of 15 repetitions with the correct feature named
-(\texttt{hf\_ratio}); reduced range on 10 of 10 repetitions for the
+grader detects injected faults consistently with the offline study.
+Tremor is flagged on 15 of 15 repetitions with \texttt{hf\_ratio}
+among the named features; reduced range on 10 of 10 repetitions for the
 two exercises with narrow population ROM spread (\texttt{rom\_deg}),
 while wand extension's wide spread defeats the population bound ---
-matching its offline rate. Clean executions pass, apart from marginal
-duration flags on one exercise traced to the inter-repetition return
-blend merging into the repetition segment. Over-speed programs are
+matching its offline rate. Clean executions are flagged on 5 of 15
+repetitions --- four duration flags on lateral deltoid raise and one
+end-point flag on bicep curl, with wand extension's clean set passing
+entirely. This false-alarm rate exceeds the 8.3\% measured offline and
+is a segmentation artifact of the robot protocol rather than a grader
+failure: the inter-repetition return blend merges into the repetition
+segment, inflating measured duration. Tightening the blend or
+segmenting on the commanded trajectory would remove it. Over-speed programs are
 caught \emph{before} grading: at full demonstration tempo the
 trajectory controller aborts on path tolerance --- an execution-layer
 safety net --- while over-speed inside tracking tolerance passes the
@@ -548,10 +593,15 @@ robot-mediated therapy.
 
 \section{Conclusion}
 A single consumer smartwatch can teach a physics-simulated rehabilitation robot a
-12-exercise clinical repertoire, verify its execution, and grade
+12-exercise prescribed-exercise repertoire, verify its execution, and grade
 movement quality --- with the left/right mirror assumption underpinning
 wearable rehabilitation finally measured rather than assumed, and the
-cross-wrist deployment gap it explains closed completely. The
+cross-wrist deployment gap it explains closed to within statistical
+equivalence. These results are established on healthy volunteers and
+on a physics simulation of the robot: they demonstrate that the
+pipeline is technically sound end to end, and they are explicitly not
+a clinical validation, which will require patient participants,
+physical-robot execution, and clinician-labelled movement faults. The
 dual-wrist dataset, all analysis code, and every figure in this paper
 are reproducible from the public repository
 (\url{https://github.com/Firaol-Tes/ASET_REHAB}).
@@ -569,8 +619,8 @@ consent terms of the collection.
 
 \section*{Acknowledgments}
 The authors thank the volunteer subjects who contributed the
-recordings.
-% TODO: physiotherapist consultation acknowledgment if applicable
+recordings, and the physiotherapists who advised on the exercise
+protocol.
 
 \begin{thebibliography}{9}
 \bibitem{burns2018} D.~M. Burns \emph{et al.}, ``Shoulder
@@ -611,8 +661,6 @@ sensors,'' \emph{ACM Computing Surveys}, vol.~46, no.~3, 2014.
 \bibitem{balasubramanian2015} S.~Balasubramanian \emph{et al.}, ``On
 the analysis of movement smoothness,'' \emph{Journal of
 NeuroEngineering and Rehabilitation}, vol.~12, no.~112, 2015.
-\bibitem{breiman2001} L.~Breiman, ``Random forests,'' \emph{Machine
-Learning}, vol.~45, no.~1, pp.~5--32, 2001.
 \bibitem{benachour2026review} Y.~Benachour \emph{et al.}, ``Machine
 learning for wearable sensor-based human movement rehabilitation: A
 five-year systematic review,'' \emph{IEEE Access}, vol.~14,

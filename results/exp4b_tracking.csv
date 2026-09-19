@@ -1,2 +1,13 @@
 exercise,slowdown,duration_s,mean_err_deg,max_err_deg,n_recorded
-Bicep-Curl,2.0,45.0,0.46,4.37,22526
+Banded-Overhead-Reach,2.0,40.5,0.181,1.06,20253
+Bicep-Curl,2.0,45.0,0.368,3.431,22505
+External-Rotation,2.0,44.5,0.073,0.585,22270
+Forearm-Pronation-Supination,2.05,46.9,0.56,10.24,23501
+Front-Delt-Raise,2.0,54.5,0.308,2.125,27276
+Lateral-Delt-Raise,2.0,59.5,0.251,1.818,29759
+One-Arm-Tricep-Extension,2.0,54.5,0.172,1.666,27263
+Scaption,2.0,52.5,0.266,1.942,26263
+Scapular,2.0,47.0,0.312,2.081,23527
+Ulnar-Nerve-Glide,2.43,98.5,0.272,2.508,49271
+Wand-Extension,2.0,42.0,0.101,0.797,21003
+Wand-Flexion,3.02,100.1,0.142,2.235,50068

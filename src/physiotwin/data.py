@@ -1,7 +1,15 @@
 """Dataset access layer for the HCT dual-wrist Apple Watch rehab dataset.
 
-Subjects are anonymized to S01..Snn (stable, sorted by folder name).
-Real names never leave this module.
+Subjects are anonymized to S01..Snn (stable, sorted by folder name), so
+no participant name reaches `results/`, the figures, or the paper. The
+folder names themselves live only on the collecting machine, alongside
+the raw recordings, which are not redistributed.
+
+Anonymize by *folder*, never by the `user` field embedded in filenames:
+a few sessions carry a stale user string from a watch that was not
+renamed between participants, so that field can attribute one
+participant's recordings to another and silently break the
+leave-one-subject-out protocol.
 """
 from __future__ import annotations
 
@@ -12,12 +20,47 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-DATA_ROOT = os.environ.get(
-    "PHYSIOTWIN_DATA", "/home/f/Downloads/HCT_Students/0-UnCompressed"
-)
+def _default_data_root() -> str:
+    """Locate the recordings: $PHYSIOTWIN_DATA, else `data/` beside the repo."""
+    env = os.environ.get("PHYSIOTWIN_DATA")
+    if env:
+        return env
+    here = os.path.dirname(os.path.abspath(__file__))
+    repo = os.path.dirname(os.path.dirname(here))
+    for candidate in (os.path.join(repo, "data"),
+                      os.path.join(os.path.dirname(repo), "0-UnCompressed")):
+        if os.path.isdir(candidate):
+            return candidate
+    raise RuntimeError(
+        "Dataset not found. Set PHYSIOTWIN_DATA to the directory holding "
+        "the per-participant recording folders, or place it at "
+        f"{os.path.join(repo, 'data')}."
+    )
 
-# Pilot / non-cohort folders excluded from all experiments.
-EXCLUDED_FOLDERS = {"Yassine Benachour"}
+
+DATA_ROOT = _default_data_root()
+
+def _excluded_folders() -> set[str]:
+    """Pilot / non-cohort recording folders to drop from all experiments.
+
+    Folder names are participant identifiers, so the list is kept out of
+    version control: set PHYSIOTWIN_EXCLUDE (comma-separated), or place
+    one folder name per line in `excluded_folders.txt` beside the data.
+    The cohort reported in the paper excludes one pilot folder, leaving
+    240 sessions from 11 participants.
+    """
+    env = os.environ.get("PHYSIOTWIN_EXCLUDE")
+    if env:
+        return {p.strip() for p in env.split(",") if p.strip()}
+    path = os.path.join(DATA_ROOT, "excluded_folders.txt")
+    if os.path.exists(path):
+        with open(path) as f:
+            return {ln.strip() for ln in f if ln.strip()
+                    and not ln.startswith("#")}
+    return set()
+
+
+EXCLUDED_FOLDERS = _excluded_folders()
 
 _FNAME = re.compile(
     r"(\d{8}-\d{6})_DM_([^_]+)_([^_]+)_([^_]+)_([^_]+)_([A-Z]{2})_([A-Z]{2})_(\d+)\.csv$"
